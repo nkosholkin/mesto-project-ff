@@ -9,7 +9,7 @@ const placesList = container.querySelector('.places__list');
 
 // @todo: Функция создания карточки
 
-function createCard({ name, link }, cardDeleteHandler) {
+function createCard({ name, link }, deleteCard) {
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
 
   const cardImage = cardElement.querySelector('.card__image');
