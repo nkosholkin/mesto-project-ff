@@ -50,3 +50,38 @@ function deleteCard(cardElement) {
 initialCards.forEach(function (item) {
   placesList.append(createCard(item, deleteCard));
 });
+
+
+
+// Попап
+
+
+const mainContent = document.querySelector('.content');
+
+
+
+
+const profileEditButton = document.querySelector('.profile__edit-button');
+const popupProfile = document.querySelector('.popup_type_edit');
+
+function openModal(popup) {
+  popup.classList.add('popup_is-opened');
+  popup.classList.remove('popup_is-animated');
+}
+
+mainContent.addEventListener('click', function(evt) {
+  if (evt.target === profileEditButton) {
+    openModal(popupProfile);
+  }
+});
+
+
+// Закрытие попапов
+
+const popupCloseButtons = document.querySelectorAll('.popup__close');
+
+popupCloseButtons.forEach(function (button) {
+  button.addEventListener('click', function () {
+    button.closest('.popup').classList.remove('popup_is-opened');
+  });
+});
