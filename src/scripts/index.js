@@ -1,3 +1,15 @@
+import { initialCards } from './cards.js';
+
+import avatar from '../images/avatar.jpg';
+
+document.addEventListener('DOMContentLoaded', function() {
+  const profileImage = document.querySelector('.profile__image');
+  profileImage.style.backgroundImage = `url('${avatar}')`;
+});
+
+
+import '../pages/index.css'; // добавьте импорт главного файла стилей
+
 // Темплейт карточки
 
 const cardTemplate = document.querySelector('#card-template').content;
