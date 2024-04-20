@@ -5,6 +5,7 @@ import avatar from '../images/avatar.jpg';
 document.addEventListener('DOMContentLoaded', function() {
   const profileImage = document.querySelector('.profile__image');
   profileImage.style.backgroundImage = `url('${avatar}')`;
+  // добавить плавное появление попапа??
 });
 
 
@@ -63,26 +64,30 @@ initialCards.forEach(function (item) {
 
 
 
-// Попап
+// Плавное открытие попапов
+
+document.addEventListener('DOMContentLoaded', function() {
+  const popups = document.querySelectorAll('.popup');
+  popups.forEach(function(popup) {
+    popup.classList.add('popup_is-animated');
+  });
+});
 
 
-const mainContent = document.querySelector('.content');
 
+// const mainContent = document.querySelector('.content');
 
-
-
-// const profileEditButton = document.querySelector('.profile__edit-button');
+// Попапы
 
 const popupProfile = document.querySelector('.popup_type_edit');
+const popupPlace = document.querySelector('.popup_type_new-card');
+const popupImage = document.querySelector('.popup_type_image');
 
 function openModal(popup) {
   popup.classList.add('popup_is-opened');
-  popup.classList.remove('popup_is-animated');
 }
 
-
-
-mainContent.addEventListener('click', function(evt) {
+container.addEventListener('click', function(evt) {
   if (evt.target.classList.contains('profile__edit-button')) {
     openModal(popupProfile);
   }
@@ -99,15 +104,7 @@ mainContent.addEventListener('click', function(evt) {
 
 });
 
-
-// const addPlaceButton = document.querySelector('.profile__add-button');
-
-const popupPlace = document.querySelector('.popup_type_new-card');
-
-// const placesItem = document.querySelector('.places__item');
-
-const popupImage = document.querySelector('.popup_type_image');
-
+// Закрытие попапов
 
 // Закрытие попапов по клику на крестик
 
@@ -141,25 +138,23 @@ document.addEventListener('keydown', function (evt) {
 });
 
 
+// Изменение данных профиля
 
-
-
-
-// Функция изменения данных профиля
-
+// Для получения значений полей ввода и самой формы
 const formElement = document.forms['edit-profile'];
-
 const nameInput = formElement.elements.name;
 const jobInput = formElement.elements.description;
 
+// Для установки начальных значений полей ввода при первой загрузки
+const profileName = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+nameInput.value = profileName.textContent;
+jobInput.value = profileDescription.textContent;
+
+// Функция изменения данных профиля
+
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-
-  const profileName = document.querySelector('.profile__title');
-  const profileDescription = document.querySelector('.profile__description');
-
-  // profileName.textContent = profileName.textContent;
-  // profileDescription.textContent = profileDescription.textContent;
 
   profileName.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
@@ -192,9 +187,7 @@ function handlePlaceFormSubmit(evt) {
     link: placeLinkInput.value
   };
 
-  // console.log(newPlace);
-
-  placesList.prepend(createCard(newPlace, deleteCard));
+  placesList.prepend(createCard(newPlace, deleteCard, likeCard));
 
   formElementPlace.reset();
 
