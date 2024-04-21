@@ -3,16 +3,7 @@ import { initialCards } from './components/cards.js';
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
 
-function handleDOMContentLoaded () {
-  // плавное появление попапа
-  const popups = document.querySelectorAll('.popup');
-  popups.forEach(function(popup) {
-    popup.classList.add('popup_is-animated');
-  });
-};
-
-document.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
-
+// DOM элементы
 // Список карточек
 const placesList = document.querySelector('.places__list');
 
@@ -41,6 +32,17 @@ const placePopup = document.querySelector('.popup_type_image');
 const placeImagePopup = document.querySelector(".popup__image");
 const placeCaptionPopup = document.querySelector(".popup__caption");
 
+// Плавное появление попапа - можно было добавить и в HTML сразу,
+// но по условию лучше не менять HTML файл
+function handleDOMContentLoaded () {
+  const popups = document.querySelectorAll('.popup');
+  popups.forEach(function(popup) {
+    popup.classList.add('popup_is-animated');
+  });
+};
+
+document.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
+
 // Вывод карточек на страницу
 (function showCards() {
   initialCards.forEach(function (item) {
@@ -48,12 +50,13 @@ const placeCaptionPopup = document.querySelector(".popup__caption");
   });
 })();
 
-// Слушаем нажатие на кнопки изменения профиля и добавления новой карточки
+// Слушаем нажатие на кнопку изменения профиля
 profileEditButton.addEventListener('click', function () {
   handleProfileEditButton();
   openModal(profilePopup);
 });
 
+// Слушаем нажатие на кнопку добавления новой карточки места
 addPlaceButton.addEventListener('click', function () {
   openModal(newPlacePopup);
 });
@@ -71,7 +74,7 @@ function handleImageClick(cardElement) {
 };
 
 // Изменение данных профиля
-// Обработчик начальных значений полей ввода при первой загрузки
+// Обработчик начальных значений полей профиля при первой загрузки
 function handleProfileEditButton() {
   profileNameInput.value = profileName.textContent;
   profileDescriptionInput.value = profileDescription.textContent;
@@ -82,12 +85,12 @@ function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   profileName.textContent = profileNameInput.value;
   profileDescription.textContent = profileDescriptionInput.value;
-  closeModal(document.querySelector('.popup_type_edit'));
+  closeModal(profilePopup);
 };
 
 profileForm.addEventListener('submit', handleProfileFormSubmit);
 
-// Добавление новой карточки
+// Добавление новой карточки места
 function handlePlaceFormSubmit(evt) {
   evt.preventDefault();
 

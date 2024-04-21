@@ -19,15 +19,22 @@ export function closeModal(popup) {
 function closePopups(evt) {
   const popups = document.querySelectorAll('.popup');
 
-  popups.forEach(function (popup) {
-    if (evt.target.classList.contains('popup__close')) {
-      closeModal(popup); // закрытие по клику на кнопку закрытия
-     }
-    if (evt.target === popup) {
-      closeModal(popup); // закрытие по клику на оверлей
-    }
-    if (evt.key === 'Escape') {
-      closeModal(popup); // закрытие по клавише Escape
-    }
-  });
-};
+  // Закрытие по клику на кнопку закрытия
+  if (evt.target.classList.contains('popup__close')) {
+    popups.forEach((popup) => {
+      if (popup.contains(evt.target)) {
+        closeModal(popup);
+      }
+    });
+  }
+
+  // Закрытие по клику на оверлей
+  else if (evt.target.classList.contains('popup')) {
+    closeModal(evt.target);
+  }
+
+  // Закрытие по клавише Escape
+  else if (evt.key === 'Escape') {
+    popups.forEach(closeModal);
+  }
+}
