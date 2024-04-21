@@ -1,91 +1,93 @@
 import '../pages/index.css';
-
-import avatar from '../images/avatar.jpg';
 import { initialCards } from './components/cards.js';
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
 
-document.addEventListener('DOMContentLoaded', function() {
-  // добавление аватара
-  const profileImage = document.querySelector('.profile__image');
-  profileImage.style.backgroundImage = `url('${avatar}')`;
+function handleDOMContentLoaded () {
   // плавное появление попапа
   const popups = document.querySelectorAll('.popup');
   popups.forEach(function(popup) {
     popup.classList.add('popup_is-animated');
   });
-});
+};
 
-// Основные DOM узлы
+document.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
 
-const container = document.querySelector('.page');
-const placesList = container.querySelector('.places__list');
+// Список карточек
+const placesList = document.querySelector('.places__list');
+
+// Для изменения данных профиля
+const profileEditButton = document.querySelector('.profile__edit-button');
+const profileName = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+
+// Для получения значений полей ввода и самой формы профиля
+const profilePopup = document.querySelector('.popup_type_edit');
+const profileForm = document.forms['edit-profile'];
+const profileNameInput = profileForm.elements['name'];
+const profileDescriptionInput = profileForm.elements['description'];
+
+// Для добавления новой карточки
+const addPlaceButton = document.querySelector('.profile__add-button');
+
+// Для получения значений полей ввода и самой формы новой карточки
+const newPlacePopup = document.querySelector('.popup_type_new-card');
+const newPlaceForm = document.forms['new-place'];
+const placeNameInput = newPlaceForm.elements['place-name'];
+const placeLinkInput = newPlaceForm.elements['link'];
+
+// Для открытия попапа с изображением
+const placePopup = document.querySelector('.popup_type_image');
+const placeImagePopup = document.querySelector(".popup__image");
+const placeCaptionPopup = document.querySelector(".popup__caption");
 
 // Вывод карточек на страницу
-
 (function showCards() {
   initialCards.forEach(function (item) {
-    placesList.append(createCard(item, deleteCard, likeCard));
+    placesList.append(createCard(item, deleteCard, likeCard, handleImageClick));
   });
 })();
 
-// Попапы
-
-const popupProfile = document.querySelector('.popup_type_edit');
-const popupPlace = document.querySelector('.popup_type_new-card');
-const popupImage = document.querySelector('.popup_type_image');
-
-container.addEventListener('click', function(evt) {
-  if (evt.target.classList.contains('profile__edit-button')) {
-    openModal(popupProfile);
-  }
-  if (evt.target.classList.contains('profile__add-button')) {
-    openModal(popupPlace);
-  }
-  if (evt.target.classList.contains('card__image')) {
-    openModal(popupImage);
-    document.querySelector('.popup__image').src = evt.target.src;
-    document.querySelector('.popup__image').alt = evt.target.alt;
-    document.querySelector('.popup__caption').textContent = evt.target.alt;
-
-  }
-
+// Слушаем нажатие на кнопки изменения профиля и добавления новой карточки
+profileEditButton.addEventListener('click', function () {
+  handleProfileEditButton();
+  openModal(profilePopup);
 });
 
-// Изменение данных профиля
+addPlaceButton.addEventListener('click', function () {
+  openModal(newPlacePopup);
+});
 
-// Для получения значений полей ввода и самой формы
-const formProfile = document.forms['edit-profile'];
-const nameInput = formProfile.elements.name;
-const jobInput = formProfile.elements.description;
+// Обработчик клика на изображение карточки
+function handleImageClick(cardElement) {
+  const cardImage = cardElement.querySelector(".card__image");
+  placeImagePopup.src = cardImage.src;
+  placeImagePopup.alt = cardImage.alt;
 
-// Для установки начальных значений полей ввода при первой загрузки
-const profileName = document.querySelector('.profile__title');
-const profileDescription = document.querySelector('.profile__description');
-nameInput.value = profileName.textContent;
-jobInput.value = profileDescription.textContent;
+  const cardTitle = cardElement.querySelector(".card__title");
+  placeCaptionPopup.textContent = cardTitle.textContent;
 
-// Функция изменения данных профиля
-
-function handleProfileFormSubmit(evt) {
-  evt.preventDefault();
-
-  profileName.textContent = nameInput.value;
-  profileDescription.textContent = jobInput.value;
-
-  closeModal(document.querySelector('.popup_type_edit'));
-
+  openModal(placePopup);
 };
 
-formProfile.addEventListener('submit', handleProfileFormSubmit);
+// Изменение данных профиля
+// Обработчик начальных значений полей ввода при первой загрузки
+function handleProfileEditButton() {
+  profileNameInput.value = profileName.textContent;
+  profileDescriptionInput.value = profileDescription.textContent;
+};
+
+// Функция изменения данных профиля
+function handleProfileFormSubmit(evt) {
+  evt.preventDefault();
+  profileName.textContent = profileNameInput.value;
+  profileDescription.textContent = profileDescriptionInput.value;
+  closeModal(document.querySelector('.popup_type_edit'));
+};
+
+profileForm.addEventListener('submit', handleProfileFormSubmit);
 
 // Добавление новой карточки
-
-const formPlace = document.forms['new-place'];
-const placeNameInput = formPlace.elements['place-name'];
-const placeLinkInput = formPlace.elements.link;
-const popupNewCard = document.querySelector('.popup_type_new-card');
-
 function handlePlaceFormSubmit(evt) {
   evt.preventDefault();
 
@@ -94,12 +96,12 @@ function handlePlaceFormSubmit(evt) {
     link: placeLinkInput.value
   };
 
-  const newCard = createCard(newPlace, deleteCard, likeCard);
+  const newCard = createCard(newPlace, deleteCard, likeCard, handleImageClick);
   placesList.prepend(newCard);
-  formPlace.reset();
+  newPlaceForm.reset();
 
-  closeModal(popupNewCard);
+  closeModal(newPlacePopup);
 
 };
 
-formPlace.addEventListener('submit', handlePlaceFormSubmit);
+newPlaceForm.addEventListener('submit', handlePlaceFormSubmit);

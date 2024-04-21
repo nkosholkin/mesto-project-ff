@@ -2,7 +2,7 @@
 
 const cardTemplate = document.querySelector('#card-template').content;
 
-export function createCard({ name, link }, deleteCard, likeCard) {
+export function createCard({ name, link }, deleteCard, likeCard, handleImageClick) {
 
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
 
@@ -21,6 +21,10 @@ export function createCard({ name, link }, deleteCard, likeCard) {
   });
 
   likeButton.addEventListener('click', likeCard);
+
+  cardImage.addEventListener('click', function () {
+    handleImageClick(cardElement);
+  });
 
   return cardElement;
 }
