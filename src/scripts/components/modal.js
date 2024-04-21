@@ -1,14 +1,11 @@
 // Открытие попапов
-
 export function openModal(popup) {
   popup.classList.add('popup_is-opened');
   document.addEventListener('keydown', closePopups); // только слушаем, когда попап открыт
   document.addEventListener('click', closePopups); // только слушаем, когда попап открыт
 }
 
-
 // Закрытие попапов
-
 export function closeModal(popup) {
   popup.classList.remove('popup_is-opened');
   document.removeEventListener('keydown', closePopups); // перестаем слушать, когда попап закрыт

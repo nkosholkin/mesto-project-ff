@@ -1,5 +1,4 @@
 // Функция создания карточки
-
 const cardTemplate = document.querySelector('#card-template').content;
 
 export function createCard({ name, link }, deleteCard, likeCard, handleImageClick) {
@@ -30,13 +29,11 @@ export function createCard({ name, link }, deleteCard, likeCard, handleImageClic
 }
 
 // Функция удаления карточки
-
 export function deleteCard(cardElement) {
   cardElement.remove();
 }
 
 // функция лайк карточки
-
 export function likeCard(evt) {
   evt.target.classList.toggle('card__like-button_is-active');
 };
