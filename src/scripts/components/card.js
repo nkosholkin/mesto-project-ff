@@ -22,7 +22,7 @@ export function createCard({ name, link }, deleteCard, likeCard, handleImageClic
   likeButton.addEventListener('click', likeCard);
 
   cardImage.addEventListener('click', function () {
-    handleImageClick(cardElement);
+    handleImageClick({ name, link });
   });
 
   return cardElement;

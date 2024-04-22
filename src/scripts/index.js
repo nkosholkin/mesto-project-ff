@@ -62,16 +62,13 @@ addPlaceButton.addEventListener('click', function () {
 });
 
 // Обработчик клика на изображение карточки
-function handleImageClick(cardElement) {
-  const cardImage = cardElement.querySelector(".card__image");
-  placeImagePopup.src = cardImage.src;
-  placeImagePopup.alt = cardImage.alt;
-
-  const cardTitle = cardElement.querySelector(".card__title");
-  placeCaptionPopup.textContent = cardTitle.textContent;
+function handleImageClick({ name, link }) {
+  placeImagePopup.src = link;
+  placeImagePopup.alt = name;
+  placeCaptionPopup.textContent = name;
 
   openModal(placePopup);
-};
+}
 
 // Изменение данных профиля
 // Обработчик начальных значений полей профиля при первой загрузки
