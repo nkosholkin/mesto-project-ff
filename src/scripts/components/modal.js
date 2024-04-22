@@ -1,37 +1,32 @@
 // Открытие попапов
 export function openModal(popup) {
   popup.classList.add('popup_is-opened');
-  document.addEventListener('keydown', closePopups); // только слушаем, когда попап открыт
-  document.addEventListener('click', closePopups); // только слушаем, когда попап открыт
+  popup.addEventListener('click', closePopupWithClick); // только слушаем, когда попап открыт
+  document.addEventListener('keydown', closePopupWithButton); // только слушаем, когда попап открыт
 }
 
 // Закрытие попапов
 export function closeModal(popup) {
   popup.classList.remove('popup_is-opened');
-  document.removeEventListener('keydown', closePopups); // перестаем слушать, когда попап закрыт
-  document.removeEventListener('click', closePopups); // перестаем слушать, когда попап закрыт
+  popup.removeEventListener('click', closePopupWithClick); // перестаем слушать, когда попап закрыт
+  document.removeEventListener('keydown', closePopupWithButton); // перестаем слушать, когда попап закрыт
 }
 
-// Закрытие попапов по клику на оверлей, по кнопке закрытия и по клавише Escape
-function closePopups(evt) {
-  const popups = document.querySelectorAll('.popup');
+// Функция выбора текущего открытого попапа
+function selectCurrentyOpenedPopup() {
+  return document.querySelector('.popup_is-opened');
+};
 
-  // Закрытие по клику на кнопку закрытия
-  if (evt.target.classList.contains('popup__close')) {
-    popups.forEach((popup) => {
-      if (popup.contains(evt.target)) {
-        closeModal(popup);
-      }
-    });
+// Функция закрытия попапов по клику на оверлей или по кнопке закрыть
+function closePopupWithClick(evt) {
+  if (evt.target.classList.contains('popup') || evt.target.classList.contains('popup__close')){
+    closeModal(selectCurrentyOpenedPopup());
   }
+};
 
-  // Закрытие по клику на оверлей
-  else if (evt.target.classList.contains('popup')) {
-    closeModal(evt.target);
+// Функциня закрытие попапов по нажатию на Esc
+function closePopupWithButton(evt) {
+  if (evt.key === 'Escape') {
+    closeModal(selectCurrentyOpenedPopup());
   }
-
-  // Закрытие по клавише Escape
-  else if (evt.key === 'Escape') {
-    popups.forEach(closeModal);
-  }
-}
+};
