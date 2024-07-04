@@ -2,6 +2,7 @@ import '../pages/index.css';
 import { initialCards } from './components/cards.js';
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
+import { validationSettings, enableValidation, clearValidation} from './validation.js';
 
 // DOM элементы
 // Список карточек
@@ -32,6 +33,9 @@ const placePopup = document.querySelector('.popup_type_image');
 const placeImagePopup = document.querySelector(".popup__image");
 const placeCaptionPopup = document.querySelector(".popup__caption");
 
+// Валидация форм
+enableValidation(validationSettings);
+
 // Плавное появление попапа - можно было добавить и в HTML сразу,
 // но по условию лучше не менять HTML файл
 function handleDOMContentLoaded () {
@@ -54,11 +58,13 @@ document.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
 profileEditButton.addEventListener('click', function () {
   handleProfileEditButton();
   openModal(profilePopup);
+  clearValidation(profileForm, validationSettings);
 });
 
 // Слушаем нажатие на кнопку добавления новой карточки места
 addPlaceButton.addEventListener('click', function () {
   openModal(newPlacePopup);
+  clearValidation(newPlaceForm, validationSettings);
 });
 
 // Обработчик клика на изображение карточки
