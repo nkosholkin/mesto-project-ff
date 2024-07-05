@@ -12,12 +12,11 @@ export function handleResponse(res) {
   if (res.ok) {
     return res.json();
   }
-  return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
+  return Promise.reject(`Что-то не так. Ошибка: ${res.status}`);
 }
 
 
 // Профиль
-
 // Функция получения информации о профиля с сервера
 export function getUserData() {
   return fetch(`${config.url}/users/me`, {
@@ -49,16 +48,14 @@ export function editUserAvatar({ avatar }) {
   }).then(handleResponse);
 }
 
-
-
 // Карточки
-
 // Функция получения карточек с сервера
 export function getInitialCards() {
   return fetch(`${config.url}/cards`, {
     method: 'GET',
     headers: config.headers,
   }).then(handleResponse);
+
 }
 
 // Функция добавления новой карточки

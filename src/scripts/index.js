@@ -1,5 +1,4 @@
 import '../pages/index.css';
-// import { initialCards } from './components/cards.js';
 import { createCard, likeCard } from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
 import { validationSettings, enableValidation, clearValidation} from './validation.js';
@@ -56,13 +55,6 @@ function handleDOMContentLoaded () {
 
 document.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
 
-// Вывод карточек на страницу
-// (function showCards() {
-//   initialCards.forEach(function (item) {
-//     placesList.append(createCard(item, deleteCard, likeCard, handleImageClick));
-//   });
-// })();
-
 // Слушаем нажатие на кнопку изменения аватара
 profileImage.addEventListener('click', function () {
   openModal(profileAvatarPopup);
@@ -87,34 +79,42 @@ function handleImageClick(image, title) {
   placeImagePopup.src = image.src;
   placeImagePopup.alt = image.alt;
   placeCaptionPopup.textContent = title.textContent;
-
   openModal(placePopup);
 }
 
 // Получение данных профиля с сервера
 Promise.all([getInitialCards(), getUserData()])
   .then(([cardsData, userData]) => {
-    setInfoProfile(userData);
-    setInfoCards(cardsData, userData._id);
+    setProfile(userData);
+    setCards(cardsData, userData._id);
   })
   .catch((err) => {
     console.log(`Что-то пошло не так. Ошибка: ${err}`);
   });
 
 // Функция установки данных профиля
-function setInfoProfile(userData) {
+function setProfile(userData) {
   profileInfo.dataset.userId = userData._id;
   profileImage.style.backgroundImage = `url(${userData.avatar})`;
   profileName.textContent = userData.name;
   profileDescription.textContent = userData.about;
 };
 
-function setInfoCards(cardData, ownerId) {
+// Функция установки карточек
+function setCards(cardData, ownerId) {
+  if (!Array.isArray(cardData)) {
+    console.error('cardData must be an array');
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
   cardData.forEach((card) => {
-    placesList.append(
-      createCard({ card: card, handleImageClick, likeCard }, ownerId)
-    );
+    const cardElement = createCard({ card: card, handleImageClick, likeCard }, ownerId);
+    fragment.appendChild(cardElement);
   });
+
+  placesList.appendChild(fragment);
 }
 
 // Изменение данных профиля
@@ -135,7 +135,7 @@ function handleProfileFormSubmit(evt) {
     about: profileDescriptionInput.value
   })
     .then((userData) => {
-      setInfoProfile(userData);
+      setProfile(userData);
       closeModal(profilePopup);
     })
     .catch((err) => {
@@ -149,7 +149,6 @@ profileForm.addEventListener('submit', handleProfileFormSubmit);
 
 
 // Функция изменения аватара профиля
-
 function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
 
@@ -159,7 +158,7 @@ function handleAvatarFormSubmit(evt) {
     avatar: profileAvatarLink.value
   })
     .then((userData) => {
-      setInfoProfile(userData);
+      setProfile(userData);
       closeModal(profileAvatarPopup);
     })
     .catch((err) => {
@@ -171,24 +170,6 @@ function handleAvatarFormSubmit(evt) {
 }
 
 profileAvatarForm.addEventListener('submit', handleAvatarFormSubmit);
-
-
-// Добавление новой карточки места
-// function handlePlaceFormSubmit(evt) {
-//   evt.preventDefault();
-
-//   const newPlace = {
-//     name: placeNameInput.value,
-//     link: placeLinkInput.value
-//   };
-
-//   const newCard = createCard(newPlace, deleteCard, likeCard, handleImageClick);
-//   placesList.prepend(newCard);
-//   newPlaceForm.reset();
-
-//   closeModal(newPlacePopup);
-
-// };
 
 // Добавление новой карточки места
 function handlePlaceFormSubmit(evt) {
@@ -214,6 +195,5 @@ function handlePlaceFormSubmit(evt) {
       renderLoading(newPlaceForm.querySelector('.popup__button'), false);
     });
 }
-
 
 newPlaceForm.addEventListener('submit', handlePlaceFormSubmit);

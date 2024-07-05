@@ -26,11 +26,7 @@ function hideInputError(formElement, inputElement, validationSettings) {
 
 // Функция валидности поля
 function isValid(formElement, inputElement, validationSettings) {
-  if(inputElement.validity.patternMismatch) {
-    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
-  } else {
-    inputElement.setCustomValidity('');
-  }
+  inputElement.setCustomValidity(inputElement.validity.patternMismatch ? inputElement.dataset.errorMessage : '');
 
   if (!inputElement.validity.valid) {
     showInputError(formElement, inputElement, validationSettings, inputElement.validationMessage);
@@ -52,6 +48,7 @@ function setEventListeners(formElement, validationSettings) {
   });
 };
 
+// Функция включения валидации
 export function enableValidation(validationSettings) {
   const formList = Array.from(document.querySelectorAll(validationSettings.formSelector));
 
@@ -69,6 +66,7 @@ function hasInvalidInput(inputList) {
   });
 }
 
+// Функция переключения состояния кнопки
 function toggleButtonState(inputList, buttonElement) {
   if(hasInvalidInput(inputList)) {
     buttonElement.disabled = true;
@@ -80,6 +78,7 @@ function toggleButtonState(inputList, buttonElement) {
   };
 };
 
+// Функция очистки валидации
 export function clearValidation(formElement, validationSettings) {
   const inputList = Array.from(formElement.querySelectorAll(validationSettings.inputSelector));
   const buttonElement = formElement.querySelector(validationSettings.submitButtonSelector);
