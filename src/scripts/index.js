@@ -3,6 +3,8 @@ import { initialCards } from './components/cards.js';
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
 import { validationSettings, enableValidation, clearValidation} from './validation.js';
+import { getUserData, editUserProfile, editUserAvatar } from './api.js';
+import { renderLoading } from './utils.js';
 
 // DOM элементы
 // Список карточек
@@ -10,6 +12,8 @@ const placesList = document.querySelector('.places__list');
 
 // Для изменения данных профиля
 const profileEditButton = document.querySelector('.profile__edit-button');
+const profileInfo = document.querySelector('.profile__info');
+const profileImage = document.querySelector('.profile__image');
 const profileName = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 
@@ -18,6 +22,11 @@ const profilePopup = document.querySelector('.popup_type_edit');
 const profileForm = document.forms['edit-profile'];
 const profileNameInput = profileForm.elements['name'];
 const profileDescriptionInput = profileForm.elements['description'];
+
+// Для изменения аватара профиля
+const profileAvatarPopup = document.querySelector('.popup_type_avatar');
+const profileAvatarForm = document.forms['avatar'];
+const profileAvatarLink = profileAvatarForm.elements['avatar-link'];
 
 // Для добавления новой карточки
 const addPlaceButton = document.querySelector('.profile__add-button');
@@ -54,6 +63,12 @@ document.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
   });
 })();
 
+// Слушаем нажатие на кнопку изменения аватара
+profileImage.addEventListener('click', function () {
+  openModal(profileAvatarPopup);
+  clearValidation(profileAvatarForm, validationSettings);
+});
+
 // Слушаем нажатие на кнопку изменения профиля
 profileEditButton.addEventListener('click', function () {
   handleProfileEditButton();
@@ -76,6 +91,25 @@ function handleImageClick({ name, link }) {
   openModal(placePopup);
 }
 
+
+// Получение данных профиля с сервера
+Promise.all([getUserData()])
+  .then(([userData]) => {
+    setInfoProfile(userData);
+  })
+  .catch((err) => {
+    console.log(`Что-то пошло не так. Ошибка: ${err}`);
+  });
+
+// Функция установки данных профиля
+function setInfoProfile(userData) {
+  profileInfo.dataset.userId = userData._id;
+  profileImage.style.backgroundImage = `url(${userData.avatar})`;
+  profileName.textContent = userData.name;
+  profileDescription.textContent = userData.about;
+};
+
+
 // Изменение данных профиля
 // Обработчик начальных значений полей профиля при первой загрузки
 function handleProfileEditButton() {
@@ -84,14 +118,64 @@ function handleProfileEditButton() {
 };
 
 // Функция изменения данных профиля
+// function handleProfileFormSubmit(evt) {
+//   evt.preventDefault();
+//   profileName.textContent = profileNameInput.value;
+//   profileDescription.textContent = profileDescriptionInput.value;
+//   closeModal(profilePopup);
+// };
+
+// Функция изменения данных профиля на сервере
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  profileName.textContent = profileNameInput.value;
-  profileDescription.textContent = profileDescriptionInput.value;
-  closeModal(profilePopup);
-};
 
+  renderLoading(profileForm.querySelector('.popup__button'), true);
+
+  editUserProfile({
+    name: profileNameInput.value,
+    about: profileDescriptionInput.value
+  })
+    .then((userData) => {
+      setInfoProfile(userData);
+      closeModal(profilePopup);
+    })
+    .catch((err) => {
+      console.log(`Что-то пошло не так. Ошибка: ${err}`);
+    })
+    .finally(() => {
+      renderLoading(profileForm.querySelector('.popup__button'), false);
+    });
+}
 profileForm.addEventListener('submit', handleProfileFormSubmit);
+
+
+// Функция изменения аватара профиля
+
+function handleAvatarFormSubmit(evt) {
+  evt.preventDefault();
+
+  renderLoading(profileAvatarForm.querySelector('.popup__button'), true);
+
+  editUserAvatar({
+    avatar: profileAvatarLink.value
+  })
+    .then((userData) => {
+      setInfoProfile(userData);
+      closeModal(profileAvatarPopup);
+    })
+    .catch((err) => {
+      console.log(`Что-то пошло не так. Ошибка: ${err}`);
+    })
+    .finally(() => {
+      renderLoading(profileAvatarForm.querySelector('.popup__button'), false);
+    });
+}
+
+profileAvatarForm.addEventListener('submit', handleAvatarFormSubmit);
+
+
+
+
 
 // Добавление новой карточки места
 function handlePlaceFormSubmit(evt) {
