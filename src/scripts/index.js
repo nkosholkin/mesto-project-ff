@@ -1,9 +1,9 @@
 import '../pages/index.css';
-import { initialCards } from './components/cards.js';
-import { createCard, deleteCard, likeCard } from './components/card.js';
+// import { initialCards } from './components/cards.js';
+import { createCard, likeCard } from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
 import { validationSettings, enableValidation, clearValidation} from './validation.js';
-import { getUserData, editUserProfile, editUserAvatar } from './api.js';
+import { getUserData, editUserProfile, editUserAvatar, getInitialCards, addNewCard } from './api.js';
 import { renderLoading } from './utils.js';
 
 // DOM элементы
@@ -57,11 +57,11 @@ function handleDOMContentLoaded () {
 document.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
 
 // Вывод карточек на страницу
-(function showCards() {
-  initialCards.forEach(function (item) {
-    placesList.append(createCard(item, deleteCard, likeCard, handleImageClick));
-  });
-})();
+// (function showCards() {
+//   initialCards.forEach(function (item) {
+//     placesList.append(createCard(item, deleteCard, likeCard, handleImageClick));
+//   });
+// })();
 
 // Слушаем нажатие на кнопку изменения аватара
 profileImage.addEventListener('click', function () {
@@ -83,19 +83,19 @@ addPlaceButton.addEventListener('click', function () {
 });
 
 // Обработчик клика на изображение карточки
-function handleImageClick({ name, link }) {
-  placeImagePopup.src = link;
-  placeImagePopup.alt = name;
-  placeCaptionPopup.textContent = name;
+function handleImageClick(image, title) {
+  placeImagePopup.src = image.src;
+  placeImagePopup.alt = image.alt;
+  placeCaptionPopup.textContent = title.textContent;
 
   openModal(placePopup);
 }
 
-
 // Получение данных профиля с сервера
-Promise.all([getUserData()])
-  .then(([userData]) => {
+Promise.all([getInitialCards(), getUserData()])
+  .then(([cardsData, userData]) => {
     setInfoProfile(userData);
+    setInfoCards(cardsData, userData._id);
   })
   .catch((err) => {
     console.log(`Что-то пошло не так. Ошибка: ${err}`);
@@ -109,6 +109,13 @@ function setInfoProfile(userData) {
   profileDescription.textContent = userData.about;
 };
 
+function setInfoCards(cardData, ownerId) {
+  cardData.forEach((card) => {
+    placesList.append(
+      createCard({ card: card, handleImageClick, likeCard }, ownerId)
+    );
+  });
+}
 
 // Изменение данных профиля
 // Обработчик начальных значений полей профиля при первой загрузки
@@ -116,14 +123,6 @@ function handleProfileEditButton() {
   profileNameInput.value = profileName.textContent;
   profileDescriptionInput.value = profileDescription.textContent;
 };
-
-// Функция изменения данных профиля
-// function handleProfileFormSubmit(evt) {
-//   evt.preventDefault();
-//   profileName.textContent = profileNameInput.value;
-//   profileDescription.textContent = profileDescriptionInput.value;
-//   closeModal(profilePopup);
-// };
 
 // Функция изменения данных профиля на сервере
 function handleProfileFormSubmit(evt) {
@@ -174,24 +173,47 @@ function handleAvatarFormSubmit(evt) {
 profileAvatarForm.addEventListener('submit', handleAvatarFormSubmit);
 
 
+// Добавление новой карточки места
+// function handlePlaceFormSubmit(evt) {
+//   evt.preventDefault();
 
+//   const newPlace = {
+//     name: placeNameInput.value,
+//     link: placeLinkInput.value
+//   };
 
+//   const newCard = createCard(newPlace, deleteCard, likeCard, handleImageClick);
+//   placesList.prepend(newCard);
+//   newPlaceForm.reset();
+
+//   closeModal(newPlacePopup);
+
+// };
 
 // Добавление новой карточки места
 function handlePlaceFormSubmit(evt) {
   evt.preventDefault();
 
-  const newPlace = {
+  renderLoading(newPlaceForm.querySelector('.popup__button'), true);
+
+  addNewCard({
     name: placeNameInput.value,
     link: placeLinkInput.value
-  };
+  })
+    .then((card) => {
+      placesList.prepend(
+        createCard({ card: card, handleImageClick, likeCard }, card.owner._id)
+      );
+      newPlaceForm.reset();
+      closeModal(newPlacePopup);
+    })
+    .catch((err) => {
+      console.log(`Что-то пошло не так. Ошибка: ${err}`);
+    })
+    .finally(() => {
+      renderLoading(newPlaceForm.querySelector('.popup__button'), false);
+    });
+}
 
-  const newCard = createCard(newPlace, deleteCard, likeCard, handleImageClick);
-  placesList.prepend(newCard);
-  newPlaceForm.reset();
-
-  closeModal(newPlacePopup);
-
-};
 
 newPlaceForm.addEventListener('submit', handlePlaceFormSubmit);

@@ -60,3 +60,39 @@ export function getInitialCards() {
     headers: config.headers,
   }).then(handleResponse);
 }
+
+// Функция добавления новой карточки
+export function addNewCard ({ name, link }) {
+  return fetch(`${config.url}/cards`, {
+    method: 'POST',
+    headers: config.headers,
+    body: JSON.stringify({
+      name: name,
+      link: link,
+    }),
+  }).then(handleResponse);
+}
+
+// Функция удаления карточки
+export function deleteCard(card) {
+  return fetch(`${config.url}/cards/${card._id}`, {
+    method: 'DELETE',
+    headers: config.headers,
+  }).then(handleResponse);
+}
+
+// Функция постановки лайка
+export function addlikeCard(card) {
+  return fetch(`${config.url}/cards/likes/${card._id}`, {
+    method: 'PUT',
+    headers: config.headers,
+  }).then(handleResponse);
+}
+
+// Функция снятия лайка
+export function dislikeCard(card) {
+  return fetch(`${config.url}/cards/likes/${card._id}`, {
+    method: 'DELETE',
+    headers: config.headers,
+  }).then(handleResponse);
+}
