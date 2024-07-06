@@ -82,14 +82,14 @@ function handleImageClick(image, title) {
   openModal(placePopup);
 }
 
-// Получение данных профиля с сервера
+// Получение данных сервера
 Promise.all([getInitialCards(), getUserData()])
   .then(([cardsData, userData]) => {
     setProfile(userData);
     setCards(cardsData, userData._id);
   })
   .catch((err) => {
-    console.log(`Что-то пошло не так. Ошибка: ${err}`);
+    console.log(`Что-то не так. Ошибка: ${err}`);
   });
 
 // Функция установки данных профиля
@@ -98,19 +98,22 @@ function setProfile(userData) {
   profileImage.style.backgroundImage = `url(${userData.avatar})`;
   profileName.textContent = userData.name;
   profileDescription.textContent = userData.about;
+
+  // Показываем кнопку редактирования профиля после загрузки данных, чтобы избежать прыжков
+  profileEditButton.removeAttribute('hidden');
 };
 
 // Функция установки карточек
 function setCards(cardData, ownerId) {
   if (!Array.isArray(cardData)) {
-    console.error('cardData must be an array');
+    console.error('cardData должен быть массивом');
     return;
   }
 
   const fragment = document.createDocumentFragment();
 
   cardData.forEach((card) => {
-    const cardElement = createCard({ card: card, handleImageClick, likeCard }, ownerId);
+    const cardElement = createCard({ card, handleImageClick, likeCard }, ownerId);
     fragment.appendChild(cardElement);
   });
 
@@ -139,7 +142,7 @@ function handleProfileFormSubmit(evt) {
       closeModal(profilePopup);
     })
     .catch((err) => {
-      console.log(`Что-то пошло не так. Ошибка: ${err}`);
+      console.log(`Что-то не так. Ошибка: ${err}`);
     })
     .finally(() => {
       renderLoading(profileForm.querySelector('.popup__button'), false);
@@ -162,7 +165,7 @@ function handleAvatarFormSubmit(evt) {
       closeModal(profileAvatarPopup);
     })
     .catch((err) => {
-      console.log(`Что-то пошло не так. Ошибка: ${err}`);
+      console.log(`Что-то не так. Ошибка: ${err}`);
     })
     .finally(() => {
       renderLoading(profileAvatarForm.querySelector('.popup__button'), false);
@@ -183,13 +186,13 @@ function handlePlaceFormSubmit(evt) {
   })
     .then((card) => {
       placesList.prepend(
-        createCard({ card: card, handleImageClick, likeCard }, card.owner._id)
+        createCard({ card, handleImageClick, likeCard }, card.owner._id)
       );
       newPlaceForm.reset();
       closeModal(newPlacePopup);
     })
     .catch((err) => {
-      console.log(`Что-то пошло не так. Ошибка: ${err}`);
+      console.log(`Что-то не так. Ошибка: ${err}`);
     })
     .finally(() => {
       renderLoading(newPlaceForm.querySelector('.popup__button'), false);

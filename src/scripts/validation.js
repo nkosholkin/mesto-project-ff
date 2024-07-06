@@ -35,6 +35,7 @@ function isValid(formElement, inputElement, validationSettings) {
   }
 };
 
+// Функция установки слушателей
 function setEventListeners(formElement, validationSettings) {
   const inputList = Array.from(formElement.querySelectorAll(validationSettings.inputSelector));
   const buttonElement = formElement.querySelector(validationSettings.submitButtonSelector);
@@ -60,6 +61,7 @@ export function enableValidation(validationSettings) {
   });
 };
 
+// Функция проверки невалидности данных
 function hasInvalidInput(inputList) {
   return inputList.some((inputElement) => {
     return !inputElement.validity.valid;
